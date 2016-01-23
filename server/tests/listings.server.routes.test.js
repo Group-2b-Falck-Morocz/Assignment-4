@@ -18,7 +18,7 @@ describe('Listings CRUD tests', function() {
     done();
   });
 
-  it('should it able to retrieve all listings', function(done) {
+  it('should be able to retrieve all listings', function(done) {
     agent.get('/api/listings')
       .expect(200)
       .end(function(err, res) {

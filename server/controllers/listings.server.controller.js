@@ -40,6 +40,14 @@ exports.create = function(req, res) {
 /* Show the current listing */
 exports.read = function(req, res) {
   /* send back the listing as json from the request */
+
+
+  Listings.find({ name: req.body.name}, function(err, listings){
+    if(err) throw err;
+
+    req.listing = listings[0];
+  });
+
   res.json(req.listing);
 };
 

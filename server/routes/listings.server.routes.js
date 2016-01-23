@@ -12,6 +12,8 @@ router.route('/')
   .get(listings.list)
   .post(getCoordinates, listings.create);
 
+
+
 /*
   The ':' specifies a URL parameter. 
  */
@@ -19,6 +21,7 @@ router.route('/:listingId')
   .get(listings.read)
   .put(getCoordinates, listings.update)
   .delete(listings.delete);
+
 
 /*
   The 'router.param' method allows us to specify middleware we would like to use to handle 
