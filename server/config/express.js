@@ -8,17 +8,15 @@ var path = require('path'),
     getCoordinates = require('../controllers/coordinates.server.controller.js');
 
 module.exports.init = function() {
-  //connect to database
-  mongoose.connect(config.db.uri);
 
-  //initialize app
-  var app = express();
+  mongoose.connect(config.db.uri); //connect to database
 
-  //enable request logging for development debugging
-  app.use(morgan('dev'));
+  var app = express(); //initialize app
 
-  //body parsing middleware 
-  app.use(bodyParser.json());
+  app.use(morgan('dev')); //enable request logging for development debugging
+
+   
+  app.use(bodyParser.json()); //body parsing middleware
 
 
   /* server wrapper around Google Maps API to get latitude + longitude coordinates from address */
@@ -27,12 +25,15 @@ module.exports.init = function() {
   });
 
   /* use the listings router for requests to the api */
+  app.use('/api/listings', listingsRouter);
 
-  app.use('/listings', listingsRouter);
+  /* serve static files: homepage */ 
+  app.use('/js', express.static(__dirname + '/../../client/js'));
+  app.use('/js/controllers',express.static(__dirname + '/../../client/js/controllers'));
+  app.use('/js/factories', express.static(__dirname + '/../../client/js/factories'));
+  app.use('/styles', express.static(__dirname + '/../../client/styles'));
+  app.use('/*', express.static(__dirname + '/../../client'));
 
-  /* go to homepage for all routes not specified */ 
-
-  app.use('/*', express.static(__dirname + '/../../client/public'));
 
 
   return app;

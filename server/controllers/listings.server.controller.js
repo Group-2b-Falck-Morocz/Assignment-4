@@ -39,21 +39,33 @@ exports.create = function(req, res) {
 
 /* Show the current listing */
 exports.read = function(req, res) {
-  /* send back the listing as json from the request */
-
-
-  Listings.find({ name: req.body.name}, function(err, listings){
-    if(err) throw err;
-
-    req.listing = listings[0];
-  });
-
-  res.json(req.listing);
+  if (req.err) {
+    res.send(req.err);
+  }
+    /* send back the listing as json from the request
+       req.listing was found and added to the req object in the middleware
+       exports.listingById */
+    res.json(req.listing);
 };
 
 /* Update a listing */
 exports.update = function(req, res) {
   var listing = req.listing;
+  Listing.find({code: listing.code}, function(err, listings) {
+    var listingToUpdate = listings[0];
+    var keys = Object.keys(req.body);
+    console.log('\n');
+    for (var i in keys) {
+      listingToUpdate[keys[i]] = req.body[keys[i]];
+    }
+    console.log('\n');
+    console.log('Attempting to save: ' + listingToUpdate.code);
+    listingToUpdate.save(function(err) {
+      if (err) throw err;
+      res.body = listingToUpdate;
+      res.status(200).send(listingToUpdate);
+    });
+  });
 
   /* Replace the article's properties with the new properties found in req.body */
   /* save the coordinates (located in req.results if there is an address property) */
@@ -63,13 +75,28 @@ exports.update = function(req, res) {
 /* Delete a listing */
 exports.delete = function(req, res) {
   var listing = req.listing;
-
-  /* Remove the article */
+  console.log('The listing received in delete is: ' + JSON.stringify(listing));
+  Listing.find({code: listing.code}, function(err, listings) {
+    if (err) throw err;
+    var listingToDelete = listings[0];
+    console.log('Attempting to delete: ' + listingToDelete.code);
+    listingToDelete.remove(function(err) {
+      if (err) throw err;
+      console.log('Deleted ' + listingToDelete.code + ' successfully!');
+      res.end('Deleted ' + listingToDelete.code + ' successfully!');
+    });
+  });
 };
 
+//DONE
 /* Retreive all the directory listings, sorted alphabetically by listing code */
 exports.list = function(req, res) {
-  /* Your code here */
+  Listing.find({}, null, {sort: {code: 1} }, function(err, listings) {
+    if (err) throw err;
+    var response = {};
+    response = listings;
+    res.jsonp(response);
+  });
 };
 
 /* 
@@ -83,6 +110,7 @@ exports.listingByID = function(req, res, next, id) {
   Listing.findById(id).exec(function(err, listing) {
     if(err) {
       res.status(400).send(err);
+      next(err);
     } else {
       req.listing = listing;
       next();

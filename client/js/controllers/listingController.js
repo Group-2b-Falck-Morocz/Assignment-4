@@ -1,6 +1,7 @@
 angular.module('listings').controller('ListingsController', ['$scope', 'Listings', 
   function($scope, Listings) {
     /* Get all the listings, then bind it to the scope */
+    $scope.listings = [];
     Listings.getAll().then(function(response) {
       $scope.listings = response.data;
     }, function(error) {

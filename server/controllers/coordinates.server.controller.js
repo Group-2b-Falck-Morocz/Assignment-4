@@ -12,7 +12,9 @@ module.exports = function(req, res, next) {
       qs: options
       }, function(error, response, body) {
         if(error) {
-          res.status(400).send(err);
+          console.log(err);
+          next();
+          //res.status(400).send(err);
         } 
 
         var data = JSON.parse(body);

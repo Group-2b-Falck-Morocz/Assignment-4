@@ -31,7 +31,7 @@ describe('Listings CRUD tests', function() {
   it('should be able to retrieve a single listing', function(done) {
     Listing.findOne({name: 'Library West'}, function(err, listing) {
       if(err) {
-        console.log(err);
+        console.log('Encoutered and error while retrieving a single listing: ' + err);
       } else {
         agent.get('/api/listings/' + listing._id)
           .expect(200)
@@ -110,6 +110,8 @@ describe('Listings CRUD tests', function() {
         if(err) throw err;
         done();
       })
+    } else {
+      done();
     }
   });
 });
